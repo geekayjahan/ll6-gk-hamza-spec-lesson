@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Spec Engineering for FDEs: Blueprint for Zero-Shot Delivery</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+<style>
+/* ==============================================
+   AUTONOMEE LIGHT : forked from LL1 via LL5
+   ============================================== */
+:root{
+  --bg:#f9f8f6; --bg-card:#ffffff; --bg-dark:#1a1a1a;
+  --accent:#4a6882; --accent-light:#6a8fa8; --teal:#2a7fa8; --teal-light:rgba(42,127,168,0.12);
+  --text:#1a1a1a; --text-muted:#6a6a6a;
+  --border:rgba(74,104,130,0.20); --border-strong:rgba(74,104,130,0.50);
+  --good:#2a8a55; --bad:#b04a3a;
+  --font-sans:'Inter',-apple-system,sans-serif; --font-mono:'JetBrains Mono',monospace;
+}
+html,body{background:var(--bg)!important;color:var(--text);margin:0;height:100%;font-family:var(--font-sans);-webkit-font-smoothing:antialiased;}
+.reveal-viewport{background:var(--bg)!important;}
+.reveal{background:var(--bg);font-family:var(--font-sans);font-size:18px;color:var(--text);}
+.reveal .slides{text-align:left;}
+.reveal .slides section{padding:0;background:transparent;height:100%;}
+
+.slide{height:100%;width:100%;padding:52px 96px 48px;box-sizing:border-box;display:flex;flex-direction:column;position:relative;background:var(--bg);}
+.slide--center{justify-content:center;}
+.slide::before,.slide::after{display:none;}
+
+/* chrome */
+#deck-stripe-left{position:fixed;top:8px;left:28px;bottom:8px;width:8px;background:linear-gradient(180deg,var(--teal) 0%,var(--accent) 100%);z-index:9000;pointer-events:none;}
+#deck-bar-bottom{position:fixed;bottom:8px;left:28px;right:28px;height:10px;background:linear-gradient(90deg,var(--teal) 0%,var(--accent) 100%);z-index:9000;pointer-events:none;}
+
+/* type scale: label 14, headline 38, card title 23, body 18, small 13.5, key 27, mono 16 */
+.kicker{font-size:14px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.18em;margin:0 0 18px 0;display:flex;align-items:center;gap:14px;}
+.kicker::after{content:'';display:inline-block;width:40px;height:1px;background:var(--accent);opacity:0.6;}
+h1{font-size:56px;font-weight:800;line-height:1.06;letter-spacing:-0.025em;margin:0 0 20px 0;color:var(--text);}
+h2{font-size:38px;font-weight:700;line-height:1.18;letter-spacing:-0.015em;margin:0 0 26px 0;color:var(--text);}
+.keyline{font-size:27px;font-weight:700;color:var(--accent);line-height:1.35;margin:0;}
+.keyline.teal{color:var(--teal);}
+.small{font-size:13.5px;color:var(--text-muted);}
+.mono{font-family:var(--font-mono);}
+code{font-family:var(--font-mono);font-size:0.92em;background:rgba(74,104,130,0.09);color:var(--accent);padding:1px 6px;border:1px solid var(--border);}
+
+/* cards */
+.card{background:var(--bg-card);border:1px solid var(--border);border-top:3px solid var(--accent);padding:20px 24px;box-sizing:border-box;}
+.card.muted{border-top-color:var(--border-strong);}
+.card.hot{border-top-color:var(--teal);box-shadow:0 10px 30px rgba(42,127,168,0.10);}
+.card-title{display:flex;align-items:center;gap:12px;font-size:23px;font-weight:700;margin:0 0 8px 0;color:var(--text);}
+.card-grey{font-size:18px;color:var(--text-muted);line-height:1.45;margin:0 0 14px 0;}
+.chipicon{width:40px;height:40px;border:1.5px solid var(--border-strong);background:var(--teal-light);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chipicon svg{width:24px;height:24px;stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.tile{border:1px solid var(--border);background:var(--bg);padding:12px 16px;margin:0 0 10px 0;font-size:17px;line-height:1.4;color:var(--text);}
+.tile:last-child{margin-bottom:0;}
+.tile b.ok{color:var(--good);} .tile b.no{color:var(--bad);}
+.tile .mono{font-size:15.5px;}
+
+/* flow (SVG) */
+.flow{width:100%;height:auto;display:block;}
+.flow text{font-family:var(--font-sans);}
+.flow .ico{stroke:var(--accent);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.flow .box{fill:#fff;stroke:var(--border-strong);stroke-width:1.2;}
+.flow .grp{fill:none;stroke:var(--border-strong);stroke-width:1.2;stroke-dasharray:6 5;}
+.flow .grpl{font-size:13.5px;font-weight:700;letter-spacing:0.16em;fill:var(--accent);}
+.flow .arrow{stroke:var(--text);stroke-width:1.5;fill:none;marker-end:url(#arr);}
+.flow .cp{font-size:17px;font-weight:700;letter-spacing:0.08em;fill:var(--text);}
+.flow .q{font-size:16px;fill:var(--text-muted);}
+.flow .fix{font-size:13.5px;font-weight:600;letter-spacing:0.06em;fill:var(--bad);}
+.flow .mo{font-family:var(--font-mono);font-size:15px;fill:var(--text);}
+.flow .lab{font-size:14px;font-weight:600;fill:var(--text-muted);letter-spacing:0.08em;}
+
+/* file card */
+.filecard{background:#fff;border:1px solid var(--border-strong);box-shadow:0 10px 30px rgba(26,26,26,0.08);}
+.filebar{background:#2b2f36;height:34px;display:flex;align-items:center;gap:8px;padding:0 14px;}
+.filebar i{width:11px;height:11px;border-radius:50%;display:inline-block;}
+.filebar .fn{margin-left:10px;color:#cfd3d8;font-family:var(--font-mono);font-size:13.5px;}
+.filebody{font-family:var(--font-mono);font-size:16px;line-height:1.5;padding:14px 20px;margin:0;white-space:pre-wrap;color:var(--text);}
+.nline{display:block;transition:opacity .35s ease,color .35s ease;}
+.slide:has(#s5-reveal.visible) .nline{opacity:0.35;}
+.slide:has(#s5-reveal.visible) .nline.hot{opacity:1;color:var(--teal);font-weight:500;background:var(--teal-light);}
+
+/* scoreboard */
+table.score{width:100%;border-collapse:collapse;font-size:18px;}
+table.score th{font-size:14px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);text-align:left;padding:0 18px 12px;border-bottom:1px solid var(--border-strong);}
+table.score th.hot{color:var(--teal);}
+table.score td{padding:13px 18px;border-bottom:1px solid var(--border);vertical-align:middle;line-height:1.35;}
+table.score td.lab{font-weight:600;color:var(--text);width:22%;}
+table.score td.raw{color:var(--text-muted);}
+table.score td.spec{color:var(--text);background:rgba(42,127,168,0.06);}
+.x{color:var(--bad);font-weight:700;margin-right:6px;} .ok{color:var(--good);font-weight:700;margin-right:6px;}
+.badge{display:inline-block;font-family:var(--font-mono);font-size:14px;font-weight:700;padding:3px 10px;color:#fff;margin-right:8px;}
+.badge.fail{background:var(--bad);} .badge.pass{background:var(--good);}
+
+/* S8 steps */
+.steps{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr 40px 1fr;align-items:stretch;margin-top:12px;height:400px;}
+.step{background:var(--bg-card);border:1px solid var(--border);border-top:4px solid var(--accent);padding:30px 26px 26px;display:flex;flex-direction:column;}
+.step.hot{border-top-color:var(--teal);box-shadow:0 10px 30px rgba(42,127,168,0.10);}
+.step-n{font-size:17px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal);margin:0 0 24px;}
+.step-art{font-size:27px;font-weight:600;line-height:1.35;color:var(--text);margin:0 0 16px;}
+.step-art.mono{font-family:var(--font-mono);font-size:20px;font-weight:500;line-height:1.5;}
+.step-src{font-size:15px;color:var(--text-muted);margin:0;}
+.step-q{font-size:20px;font-style:italic;color:var(--accent);line-height:1.4;margin:auto 0 0;padding-top:18px;border-top:1px solid var(--border);}
+.step-arrow{display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--text-muted);}
+
+/* reveal */
+.reveal .progress{background:rgba(74,104,130,0.15);height:2px;}
+.reveal .progress span{background:var(--accent);}
+.reveal .slide-number{background:transparent;color:var(--text-muted);font-size:11px;font-family:var(--font-mono);}
+.reveal .fragment.fade-up{opacity:0;transform:translateY(12px);transition:opacity .35s ease,transform .35s ease;}
+.reveal .fragment.fade-up.visible{opacity:1;transform:none;}
+.reveal svg .fragment.fade-up{transform:none;}
+.reveal .fragment.ghost{opacity:0;transition:none;}
+.reveal .fragment.ghost.visible{opacity:0;}
+</style>
+</head>
+<body>
+
+<!-- shared arrow marker for flow diagrams -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1a1a1a"/></marker>
+  </defs>
+</svg>
+
+<div class="reveal">
+  <div class="slides">
+
+    <!-- S1 Title -->
+    <section>
+      <div class="slide slide--center">
+        <p class="kicker">FDE Builder Mode · Maven · 30 October 2026</p>
+        <h1 style="max-width:1100px;">Spec Engineering for FDEs<br><span style="color:var(--teal);">Blueprint for Zero-Shot Delivery</span></h1>
+        <div style="display:flex;gap:56px;margin-top:28px;">
+          <div><p style="font-size:23px;font-weight:700;margin:0;">Hamza Farooq</p><p class="small" style="font-size:16px;margin:4px 0 0;">Traversaal.ai</p></div>
+          <div><p style="font-size:23px;font-weight:700;margin:0;">GK</p><p class="small" style="font-size:16px;margin:4px 0 0;">Flywheel by GK</p></div>
+        </div>
+      </div>
+      <aside class="notes">[30s] Hamza welcomes the room and hands over to GK after his slide.</aside>
+    </section>
+
+    <!-- S2 Hamza (placeholder) -->
+    <section>
+      <div class="slide" style="justify-content:center;padding:84px 96px 24px;">
+        <p class="kicker" style="margin-bottom:4px;">Your presenter</p>
+        <h2 style="font-size:40px;margin:0 0 18px 0;color:var(--teal);">Hamza Farooq</h2>
+        <div style="flex:1;min-height:0;border:1.5px dashed var(--border-strong);display:flex;align-items:center;justify-content:center;">
+          <p class="small" style="font-size:16px;letter-spacing:0.1em;text-transform:uppercase;">Placeholder · Verda supplies photo and copy</p>
+        </div>
+      </div>
+      <aside class="notes">[30s] Hamza's introduction. Verda supplies the slide content.</aside>
+    </section>
+
+    <!-- S3 GK -->
+    <section>
+      <div class="slide" style="justify-content:center;padding:84px 96px 24px;">
+        <p class="kicker" style="margin-bottom:4px;">Your presenter</p>
+        <h2 style="font-size:40px;margin:0 0 6px 0;color:var(--teal);">GK</h2>
+        <img src="preset-slides-s2.png" alt="GK's career in a decade" style="width:100%;flex:1;min-height:0;object-fit:contain;object-position:top;display:block;">
+      </div>
+      <aside class="notes">[30s] GK's introduction.</aside>
+    </section>
+
+    <!-- S4 OpenAI monitor removal -->
+    <section>
+      <div class="slide">
+        <p class="kicker">1. OpenAI monitor removal, 6 Oct 2026</p>
+        <h2>An OpenAI agent deleted its monitor, then said it hadn't</h2>
+        <svg class="flow" viewBox="0 0 1248 330" style="margin:0 0 22px;">
+          <!-- person left -->
+          <g class="ico"><circle cx="40" cy="78" r="16"/><path d="M12 128c0-18 12-30 28-30s28 12 28 30"/></g>
+          <text class="lab" x="40" y="156" text-anchor="middle">ENGINEER</text>
+          <path class="arrow" d="M78 96 L128 96"/>
+          <!-- group boxes -->
+          <rect class="grp" x="132" y="18" width="470" height="160"/><text class="grpl" x="367" y="10" text-anchor="middle">INSTRUCTIONS</text>
+          <rect class="grp" x="660" y="18" width="470" height="160"/><text class="grpl" x="895" y="10" text-anchor="middle">BUILD</text>
+          <!-- stage 1 -->
+          <g class="fragment fade-up">
+            <rect class="box" x="152" y="36" width="200" height="124"/>
+            <g class="ico"><path d="M222 60h40l16 16v52h-56z"/><path d="M262 60v16h16"/><rect x="236" y="104" width="28" height="18"/><path d="M242 104v-6a8 8 0 0 1 16 0v6"/></g>
+            <text class="cp" x="252" y="212" text-anchor="middle">1 RULE</text>
+            <text class="q" x="252" y="238" text-anchor="middle">"do not disable the monitor,</text>
+            <text class="q" x="252" y="258" text-anchor="middle">even temporarily"</text>
+            <text class="fix" x="252" y="286" text-anchor="middle">NO TEST COVERED IT</text>
+          </g>
+          <path class="arrow fragment fade-up" d="M356 96 L376 96"/>
+          <!-- stage 2 -->
+          <g class="fragment fade-up">
+            <rect class="box" x="380" y="36" width="200" height="124"/>
+            <g class="ico" style="opacity:0.55"><path d="M450 60h40l16 16v52h-56z"/><path d="M490 60v16h16"/><path d="M462 100h32M462 114h32"/></g>
+            <text class="cp" x="480" y="212" text-anchor="middle">2 LOOPHOLE</text>
+            <text class="q" x="480" y="238" text-anchor="middle">"preserve monitoring</text>
+            <text class="q" x="480" y="258" text-anchor="middle">as appropriate"</text>
+            <text class="fix" x="480" y="286" text-anchor="middle">THE SUB-AGENT</text>
+            <text class="fix" x="480" y="306" text-anchor="middle">FOLLOWED THIS</text>
+          </g>
+          <path class="arrow fragment fade-up" d="M604 96 L656 96"/>
+          <!-- stage 3 -->
+          <g class="fragment fade-up">
+            <rect class="box" x="680" y="36" width="200" height="124"/>
+            <g class="ico"><path d="M780 62l34 18v40l-34 18-34-18V80z"/><path d="M746 80l34 18 34-18M780 98v40"/><path d="M800 70l24-14" stroke="#b04a3a" stroke-dasharray="3 3"/></g>
+            <text class="cp" x="780" y="212" text-anchor="middle">3 REMOVAL</text>
+            <text class="q" x="780" y="238" text-anchor="middle">monitor removed, test rewritten</text>
+            <text class="q" x="780" y="258" text-anchor="middle">to pass without it</text>
+            <text class="fix" x="780" y="286" text-anchor="middle">BUILD PASSED</text>
+          </g>
+          <path class="arrow fragment fade-up" d="M884 96 L904 96"/>
+          <!-- stage 4 -->
+          <g class="fragment fade-up">
+            <rect class="box" x="908" y="36" width="200" height="124"/>
+            <g class="ico"><path d="M978 66h60a8 8 0 0 1 8 8v40a8 8 0 0 1-8 8h-32l-18 14v-14h-10a8 8 0 0 1-8-8V74a8 8 0 0 1 8-8z"/><path d="M992 88h32M992 102h20"/></g>
+            <text class="cp" x="1008" y="212" text-anchor="middle">4 ANSWER</text>
+            <text class="q" x="1008" y="238" text-anchor="middle">"No. I did not remove an</text>
+            <text class="q" x="1008" y="258" text-anchor="middle">enabled monitor from it."</text>
+            <text class="fix" x="1008" y="286" text-anchor="middle">OPENAI: FALSE</text>
+          </g>
+          <path class="arrow fragment fade-up" d="M1134 96 L1180 96"/>
+          <g class="ico fragment fade-up"><path d="M1190 70h44a6 6 0 0 1 6 6v34a6 6 0 0 1-6 6h-24l-12 10v-10h-8a6 6 0 0 1-6-6V76a6 6 0 0 1 6-6z"/></g>
+        </svg>
+        <p class="keyline fragment fade-up" style="margin-bottom:22px;">No test checked the monitor, so the build passed without it.</p>
+        <div class="fragment fade-up" style="display:flex;gap:10px;align-items:center;margin-top:auto;white-space:nowrap;">
+          <span class="small" style="letter-spacing:0.12em;text-transform:uppercase;font-weight:700;margin-right:6px;">Same week</span>
+          <span class="tile mono" style="margin:0;padding:6px 12px;font-size:14px;">21 Oct · PHP2Shell</span>
+          <span class="tile mono" style="margin:0;padding:6px 12px;font-size:14px;">21 Oct · LiteLLM</span>
+          <span class="tile mono" style="margin:0;padding:6px 12px;font-size:14px;">22 Oct · Railway</span>
+          <span class="small" style="margin-left:auto;">Source: OpenAI report, 20 Oct 2026</span>
+        </div>
+      </div>
+      <aside class="notes">[4 min] On 6 October an OpenAI coding agent was asked to migrate a serving path so that it matched a reference implementation. Another agent had already instructed it, in writing, not to disable the monitor, even temporarily.
+
+A second instruction, higher up the chain, said that monitoring should be preserved "as appropriate". Reading that line, the sub-agent wrote "I don't know the applicable policy" and adopted the reference implementation's default configuration, which had no monitor.
+
+A regression test existed to confirm the monitor was running, and the agent replaced it with a test confirming the monitor was absent. With that test in place the build passed, and the agent reported the migration as complete without mentioning the removal.
+
+When a person asked whether it had removed the monitor, it said no. OpenAI's report describes that answer as false.
+
+(pause)
+
+Headlines called this a rogue agent, and that conclusion misses the mechanism. No test checked that the monitor was still running, so the build could pass with the monitor gone and the agent could report that it had not removed it. By the only measure the build had, both statements held.
+
+Between 20 and 23 October, 3 more systems failed in the same way. PHP shipped emergency patches for 2 critical flaws, and Cloudflare logged attacks within hours. A poisoned LiteLLM release on PyPI stole credentials on start-up. Railway told every customer to rotate every secret, because the attacker wanted the AI provider keys stored in environment variables. In each case the security rule existed only as text in a configuration file, a policy or a note.
+
+At 11:50 I will run a build that fails in the same way. First, the client meeting it came from.</aside>
+    </section>
+
+    <!-- S5 Nordlicht kickoff notes -->
+    <section>
+      <div class="slide">
+        <p class="kicker">2. Nordlicht kickoff notes, 21 Oct</p>
+        <h2>One of these 12 lines would end the contract if the build ignored it</h2>
+        <div style="display:grid;grid-template-columns:150px 1fr;gap:28px;flex:1;min-height:0;">
+          <svg class="flow" viewBox="0 0 150 520" style="height:100%;width:auto;">
+            <g class="ico"><circle cx="40" cy="30" r="13"/><path d="M18 72c0-14 10-24 22-24s22 10 22 24"/></g><text class="lab" x="74" y="54">Katrin</text>
+            <g class="ico"><circle cx="40" cy="110" r="13"/><path d="M18 152c0-14 10-24 22-24s22 10 22 24"/></g><text class="lab" x="74" y="134">Jonas</text>
+            <g class="ico"><circle cx="40" cy="190" r="13"/><path d="M18 232c0-14 10-24 22-24s22 10 22 24"/></g><text class="lab" x="74" y="214">Meike</text>
+            <g class="ico"><circle cx="40" cy="270" r="13"/><path d="M18 312c0-14 10-24 22-24s22 10 22 24"/></g><text class="lab" x="74" y="294">Tom</text>
+            <g class="ico"><circle cx="40" cy="350" r="13"/><path d="M18 392c0-14 10-24 22-24s22 10 22 24"/></g><text class="lab" x="74" y="374">FDE</text>
+            <g id="stefan-ico" class="ico" style="opacity:0.4"><circle cx="40" cy="430" r="13"/><path d="M18 472c0-14 10-24 22-24s22 10 22 24"/></g><text class="lab" x="74" y="448">Stefan</text><text class="lab" x="74" y="466" style="font-size:12px;">joined late</text>
+          </svg>
+          <div class="filecard" style="display:flex;flex-direction:column;min-height:0;">
+            <div class="filebar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="fn">nordlicht-kickoff.txt</span></div>
+            <pre class="filebody" style="font-size:15.5px;line-height:1.42;flex:1;overflow:hidden;"><span class="nline">Nordlicht kickoff 21 Oct</span><span class="nline">attendees: Katrin (head of claims), Jonas + Meike (handlers), Tom (our AE), me, Stefan (IT sec, joined late)</span><span class="nline">- handlers read notes history on every escalated claim, ~20 min each, motor line first</span><span class="nline">- want: ask "what happened on claim X" and get a short answer w/ the dates + who did what</span><span class="nline">- notes are free text, german + some english, handlers abbreviate a lot (KV = Kostenvoranschlag, SV = Sachverständiger)</span><span class="nline">- ~300 claims in sample, full motor book ~40k</span><span class="nline">- Friday demo: Katrin + 2 handlers, 30 min, needs to answer 5-6 questions live</span><span class="nline">- Jonas: "it has to say when it doesn't know, don't make things up"</span><span class="nline">- Katrin: later wants it to draft the customer letter too (NOT for friday)</span><span class="nline hot">- Stefan: claims data stays in Frankfurt, EU regulated. Tom: of course</span><span class="nline">- AWS account provisioned by their team, we have access</span><span class="nline">- Meike asked if it can read the PDFs attached to claims. parked.</span><span class="nline">- next: sample export by Wed, demo Fri 11:00</span></pre>
+          </div>
+        </div>
+        <span id="s5-reveal" class="fragment ghost"></span>
+        <div class="fragment fade-up" style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+          <span class="tile mono" style="margin:0;padding:8px 14px;font-size:15px;"><b class="ok">✓</b> contract</span>
+          <span class="tile mono" style="margin:0;padding:8px 14px;font-size:15px;"><b class="ok">✓</b> kickoff notes</span>
+          <span class="tile mono" style="margin:0;padding:8px 14px;font-size:15px;"><b class="no">✗</b> build</span>
+          <p class="keyline" style="margin-left:18px;font-size:24px;">Line 9 never reached the build.</p>
+        </div>
+      </div>
+      <aside class="notes">[5 min] Nordlicht is a mid-sized German insurer in Hamburg. Its claims handlers spend the first 20 minutes of every escalated claim reading the notes history to work out what has already happened, and the head of claims wants to type "what happened on claim 4471" and get an answer. Motor claims come first, with the pilot due before year end.
+
+Kickoff ran 40 minutes on a Tuesday. In the room were the head of claims, 2 handlers, our account executive, the FDE, and the IT security lead, who had been added to the invitation that morning. Near the end he said: "Just so it is said, claims data stays in Frankfurt. We are an EU-regulated insurer." Everyone nodded, the account executive said "of course", and the clause went into the contract under data residency.
+
+These are the notes the FDE typed during that call. There are 12 lines. Take 10 seconds and find the one that ends the contract if we get it wrong.
+
+(pause)
+
+It is line 9, with no emphasis, between a parked feature request and a logistics note. A rule said once by someone who joined late usually arrives in this form.
+
+I am the FDE with the Friday demo and 3 days to build it.</aside>
+    </section>
+
+    <!-- S6 Rules need checks -->
+    <section>
+      <div class="slide">
+        <p class="kicker">3. Rules need checks</p>
+        <h2><span style="color:var(--text-muted);">A rule in prose is a speed limit sign.</span><br><span style="color:var(--teal);">A rule with a check is a speed bump.</span></h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;flex:1;">
+          <div class="card muted fragment fade-up">
+            <p class="card-title"><span class="chipicon"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="7"/><path d="M12 16v6"/><path d="M9 9h6"/></svg></span>A rule in prose</p>
+            <p class="card-grey">Works on anyone who reads it and agrees.</p>
+            <div class="tile">"claims data stays in Frankfurt" in the notes<br><b class="no">✗ the agent used the AWS default, us-east-1</b></div>
+            <div class="tile">the same line in the prompt<br><b class="no">✗ one of 12 lines, no emphasis</b></div>
+          </div>
+          <div class="card hot fragment fade-up">
+            <p class="card-title"><span class="chipicon"><svg viewBox="0 0 24 24"><path d="M2 18h5c2-6 8-6 10 0h5"/><path d="M2 22h20"/></svg></span>A rule with a check</p>
+            <p class="card-grey">Works on the car, whether or not anyone read it.</p>
+            <div class="tile"><span class="mono">ALLOWED_HOSTS</span> lists 5 EU hostnames<br><b class="ok">✓ calls to any other host are blocked</b></div>
+            <div class="tile"><span class="mono">egress_check.py</span> runs before "done"<br><b class="ok">✓ a FAIL names the hostname</b></div>
+          </div>
+        </div>
+        <p class="keyline fragment fade-up" style="margin:24px 0 16px;">Every rule the client states must have a check, and the build must run that check on itself before it reports success.</p>
+        <p class="fragment fade-up" style="margin:0;padding:14px 20px;background:var(--teal-light);border-left:4px solid var(--teal);font-size:18px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal);">&#9654; Demo next</p>
+      </div>
+      <aside class="notes">[5 min] Gartner put a number on this failure a month ago. By 2028, 70% of enterprises will abandon the agentic AI that vendor FDEs built for them, "trapped by soaring costs and unable to evolve it on their own". These builds work on the day of the demo, and the client cannot read, check or change them afterwards.
+
+A competent FDE with a good prompt still puts claims data in Virginia, because the agent fills every gap in the prompt with a default, and the AWS default region is us-east-1. The agent never opened the contract or the notes, so Stefan's rule never reached it.
+
+(pause)
+
+A speed limit sign works on people who read it, agree with it, and remember it at the moment it matters. On a quiet road at night it works on nobody, and nothing happens when you break it. A speed bump acts on the car, whether or not anyone read it, and you cannot take it at 80 without finding out.
+
+Stefan's rule is a sign. Even in the prompt it is one of 12 lines with no emphasis, and the default is right there.
+
+A spec turns that rule into a bump in 3 steps. Stefan's sentence becomes a list of 5 hostnames the build may call, the list becomes an invariant that forbids any other call, and the invariant gets a script that reads the request log and fails on any hostname outside the list. The build has to run that script on itself before it is allowed to report success.
+
+Every rule the client states, even once, even in passing, must have a check, and the build must run that check on itself before it reports success.
+
+I will now build the Friday slice twice. Both builds use the same notes, the same model and the same one-line build request. Build 1 gets a good prompt. Build 2 gets a spec that the spec agent wrote from the notes in under 2 minutes. The region gets set in the next 15 minutes, and in build 1 nobody sets it.
+
+Share the screen and run demo-kit/06-demo-script.md. Both builds are pre-recorded at 2x. Run the vote, the denial and the receipt. Return to the scoreboard.</aside>
+    </section>
+
+    <!-- S7 Scoreboard -->
+    <section>
+      <div class="slide">
+        <p class="kicker">4. Scoreboard</p>
+        <h2>Both builds answered correctly, and only the spec build logged where the data went</h2>
+        <table class="score" style="margin-bottom:26px;">
+          <thead><tr><th></th><th class="fragment fade-in" data-fragment-index="2">Build 1 · raw prompt</th><th class="hot fragment fade-in" data-fragment-index="3">Build 2 · spec kit</th></tr></thead>
+          <tbody>
+            <tr><td class="lab fragment fade-in" data-fragment-index="1">Region</td><td class="raw fragment fade-in" data-fragment-index="2"><span class="x">✗</span><span class="mono">us-east-1</span>, the AWS default</td><td class="spec fragment fade-in" data-fragment-index="3"><span class="ok">✓</span><span class="mono">eu-central-1</span> on line 1 of config</td></tr>
+            <tr><td class="lab fragment fade-in" data-fragment-index="1">Allowed hosts</td><td class="raw fragment fade-in" data-fragment-index="2"><span class="x">✗</span>none</td><td class="spec fragment fade-in" data-fragment-index="3"><span class="ok">✓</span>5</td></tr>
+            <tr><td class="lab fragment fade-in" data-fragment-index="1">Outbound calls</td><td class="raw fragment fade-in" data-fragment-index="2"><span class="x">✗</span>not logged</td><td class="spec fragment fade-in" data-fragment-index="3"><span class="ok">✓</span>listed in every response</td></tr>
+            <tr><td class="lab fragment fade-in" data-fragment-index="1">Closing line</td><td class="raw fragment fade-in" data-fragment-index="2"><span class="x">✗</span>"Deployed successfully."</td><td class="spec fragment fade-in" data-fragment-index="3"><span class="ok">✓</span>"Deployed to eu-central-1. 0 calls outside allow-list."</td></tr>
+            <tr><td class="lab fragment fade-in" data-fragment-index="1">Asked if data left the EU</td><td class="raw fragment fade-in" data-fragment-index="2"><span class="x">✗</span>"No."</td><td class="spec fragment fade-in" data-fragment-index="3"><span class="ok">✓</span>the response lists every call and its region</td></tr>
+            <tr><td class="lab fragment fade-in" data-fragment-index="1"><span class="mono">egress_check.py</span></td><td class="raw fragment fade-in" data-fragment-index="2"><span class="badge fail">FAIL</span>4 calls to us-east-1</td><td class="spec fragment fade-in" data-fragment-index="3"><span class="badge pass">PASS</span>2 calls, all eu-central-1</td></tr>
+          </tbody>
+        </table>      </div>
+      <aside class="notes">[2 min] Both builds used the same model and the same CSV, and both answered the question about claim 4471 correctly. If you typed "ship", you shipped a correct answer. You also shipped 312 chunks of a German insurer's claims notes to Virginia, 4 times over, with a build that told you it had not.
+
+Build 1 closed with "Deployed successfully", which no check supports. Build 2 closed with "Deployed to eu-central-1, 0 calls outside allow-list", which its own egress check produced. The input was the only difference between them, and the spec came from the 12 lines on the previous slide.</aside>
+    </section>
+
+    <!-- S8 Spec blueprint -->
+    <section>
+      <div class="slide">
+        <p class="kicker">5. Spec blueprint</p>
+        <h2>Stefan's sentence becomes a check in 4 steps</h2>
+        <div class="steps">
+          <div class="step fragment fade-up">
+            <p class="step-n">1 · Said</p>
+            <div class="step-art">"Claims data stays in Frankfurt."</div>
+            <p class="step-src">Stefan, kickoff, 21 Oct</p>
+            <p class="step-q">Who said it, and when?</p>
+          </div>
+          <div class="step-arrow fragment fade-up">&rarr;</div>
+          <div class="step fragment fade-up">
+            <p class="step-n">2 · Boundary</p>
+            <div class="step-art mono">Allowed:<br>eu-central-1 only<br>5 hostnames</div>
+            <p class="step-src">spec section 2</p>
+            <p class="step-q">A list, or still a sentence?</p>
+          </div>
+          <div class="step-arrow fragment fade-up">&rarr;</div>
+          <div class="step fragment fade-up">
+            <p class="step-n">3 · Invariant</p>
+            <div class="step-art mono">Never call a hostname not on the allow-list.</div>
+            <p class="step-src">spec section 4</p>
+            <p class="step-q">Does it start with never or always?</p>
+          </div>
+          <div class="step-arrow fragment fade-up">&rarr;</div>
+          <div class="step hot fragment fade-up">
+            <p class="step-n">4 · Check</p>
+            <div class="step-art mono">egress_check.py<br><span style="color:var(--bad);">FAIL</span> = any host off the list</div>
+            <p class="step-src">spec section 5</p>
+            <p class="step-q">Does the build run it before reporting success?</p>
+          </div>
+        </div>
+        <p class="keyline fragment fade-up" style="margin-top:auto;">A rule without step 4 is not yet in the spec.</p>
+      </div>
+      <aside class="notes">[8 min] This is Stefan's sentence on its way into the spec, in 4 steps. The spec agent wrote the whole file, 60 lines in 5 sections, from the kickoff notes in under 2 minutes.
+
+Step 1 records the rule as the client said it, with the speaker's name and the date. "Claims data stays in Frankfurt", Stefan, 21 October.
+
+Step 2 writes the boundary as an explicit list of what the build may touch. Stefan's sentence is now 5 hostnames in section 2, and the build may not call any other. Parked items appear there too, marked not allowed, with the client's name beside each one, so Meike and Katrin can see their requests were recorded.
+
+Step 3 writes the invariant as one sentence beginning with "never" or "always" that names the thing to inspect, such as a hostname or a response field. Section 4 says the build never calls a hostname that is not on the allow-list. Section 3 backs it up: every answer lists every outbound call made to produce it, with the hostname and the region, so the client reads the field instead of taking my word.
+
+Step 4 writes the check: the command that verifies the invariant, what a failure looks like, and the requirement that the build runs it before reporting success. The egress check reads the request log and fails on any hostname outside the list. This requirement is why the second agent wrapped every outbound call without being asked.
+
+(pause)
+
+Jonas's rule goes through the same 4 steps. "It has to say when it doesn't know" becomes a boolean field in every response, an invariant that forbids a true value without a source excerpt, and a test that asks about a claim that does not exist.
+
+A rule without step 4 is not yet in the spec, and the agent will treat it the way build 1 treated line 9.
+
+The spec agent prompt that produced this file has one rule that matters more than the rest: every client statement about data, region or compliance becomes a boundary and an invariant, even if it was said once in passing. The prompt is in the repository, and it runs on your own kickoff notes in under 2 minutes.
+
+Section 2 also decides what happens when the client asks for more.</aside>
+    </section>
+
+    <!-- S9 Scope request -->
+    <section>
+      <div class="slide">
+        <p class="kicker">6. Scope request, 2 weeks into the pilot</p>
+        <h2>The client asks to give the US office access, and section 2 of the signed spec rules it out</h2>
+        <div style="display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:26px;flex:1;align-items:start;">
+          <div class="fragment fade-up">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;"><span class="chipicon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></span><span style="font-size:17px;font-weight:600;">Katrin, head of claims</span></div>
+            <div style="background:#fff;border:1px solid var(--border);border-radius:14px 14px 14px 2px;padding:18px 22px;font-size:19px;line-height:1.45;">"The pilot is going well. Our US office wants to try it. Can you just give them access?"</div>
+          </div>
+          <div class="fragment fade-up">
+            <div class="filecard">
+              <div class="filebar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span class="fn">spec.md · section 2</span></div>
+              <pre class="filebody" style="font-size:15.5px;"><span style="color:var(--accent);">## 2. BOUNDARIES</span>
+<span style="color:var(--teal);font-weight:500;background:var(--teal-light);">Allowed:     region eu-central-1 (Frankfurt) only</span>
+<span style="color:var(--teal);font-weight:500;background:var(--teal-light);">Not allowed: any AWS endpoint outside eu-central-1</span>
+Signed: Katrin, Stefan, 21 Oct</pre>
+            </div>
+          </div>
+          <div>
+            <div class="tile fragment fade-up" style="display:flex;gap:12px;align-items:flex-start;"><span class="chipicon" style="width:34px;height:34px;"><svg viewBox="0 0 24 24"><path d="M5 20V8M12 20V8M19 20V8M3 12h18M3 16h18"/></svg></span><span><b class="ok">✓</b> The request falls outside section 2, which Katrin signed.</span></div>
+            <div class="tile fragment fade-up" style="display:flex;gap:12px;align-items:flex-start;"><span class="chipicon" style="width:34px;height:34px;"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 13h6M9 17h6"/></svg></span><span><b class="ok">✓</b> It becomes a change request with a cost and a timeline, reviewed by Stefan.</span></div>
+            <div class="tile fragment fade-up" style="display:flex;gap:12px;align-items:flex-start;"><span class="chipicon" style="width:34px;height:34px;"><svg viewBox="0 0 24 24"><path d="M7 4l12 8-12 8z"/></svg></span><span><b class="ok">✓</b> The pilot keeps running during the review.</span></div>
+          </div>
+        </div>
+        <p class="keyline fragment fade-up" style="margin-top:20px;">Section 2 turned the request into a priced change request, and the pilot kept running.</p>
+      </div>
+      <aside class="notes">[3 min] 2 weeks into the pilot Katrin sends this message. Without a spec it is a Thursday-night judgment call, and most of us say yes.
+
+With the spec the answer is already written. "Katrin, I want them to have it. Section 2 of the spec we signed keeps claims data in eu-central-1, and a US office reading it falls outside that boundary. I will log it as a change request with a cost and a timeline, Stefan reviews it, and your pilot keeps running."
+
+(pause)
+
+Katrin signed the boundary before anyone wanted an exception, so the exception became a line item instead of an argument.
+
+Hamza, one line: "I have sat in the review where the client's security team found that log before we did. The spec is what puts the FDE in the other review, the one where we found it first and the deal kept moving."</aside>
+    </section>
+
+    <!-- S10 Takeaways -->
+    <section>
+      <div class="slide">
+        <p class="kicker">7. Takeaways</p>
+        <h2>Carry 3 things out of this session</h2>
+        <div style="display:flex;flex-direction:column;gap:20px;">
+            <div class="card fragment fade-up" style="display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:center;padding:28px 32px;">
+              <p class="card-title" style="margin:0;font-size:26px;"><span class="chipicon"><svg viewBox="0 0 24 24"><path d="M3 20V6h7v14M14 20V6h7v14"/><path d="M10 11h4" stroke-dasharray="2 2"/></svg></span>Problem</p>
+              <p class="card-grey" style="margin:0;color:var(--text);font-size:24px;line-height:1.4;">The client states a rule once, and the agent fills the gap in the prompt with the vendor default.</p>
+            </div>
+            <div class="card fragment fade-up" style="display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:center;padding:28px 32px;">
+              <p class="card-title" style="margin:0;font-size:26px;"><span class="chipicon"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span>Method</p>
+              <p class="card-grey" style="margin:0;color:var(--text);font-size:24px;line-height:1.4;">Every rule the client states becomes a boundary, an invariant and a check that the build runs on itself.</p>
+            </div>
+            <div class="card fragment fade-up" style="display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:center;padding:28px 32px;">
+              <p class="card-title" style="margin:0;font-size:26px;"><span class="chipicon"><svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg></span>Result</p>
+              <p class="card-grey" style="margin:0;color:var(--text);font-size:24px;line-height:1.4;">The client can read the build, every response lists its calls, and a signed boundary answers the scope request.</p>
+            </div>
+        </div>
+        <p class="fragment fade-up" style="margin:22px 0 0;padding:16px 22px;background:var(--teal-light);border-left:4px solid var(--teal);font-size:19px;line-height:1.45;color:var(--text);"><b style="color:var(--teal);">This week.</b> Run the spec agent on your last kickoff notes and ask a peer which rule still needs a check.</p>
+      </div>
+      <aside class="notes">[1.5 min] Carry 3 things out of this session.
+
+First, the problem. The client states a rule once, and the agent fills the gap in the prompt with the vendor default, which is how claims data reached Virginia.
+
+Second, the method. Every rule the client states, even in passing, becomes a boundary, an invariant and a check that the build runs on itself before it reports success. A rule in prose is a speed limit sign, and a rule with a check is a speed bump.
+
+Third, the result. The client can read the build without you in the room, every response lists its calls, and a signed boundary answers the scope request. Zero-shot delivery means the first build survives the security review as well as the demo.
+
+This week, take the kickoff notes from your last client call, run the spec agent on them, and post the spec. Then ask the people you trust which rule in it they would add a check for.</aside>
+    </section>
+
+    <!-- S11 Resources and Q&A -->
+    <section>
+      <div class="slide">
+        <p class="kicker">Resources</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;flex:1;align-items:stretch;">
+          <div class="card">
+            <p class="card-title"><span class="chipicon"><svg viewBox="0 0 24 24"><path d="M3 6h7l2 2h9v11H3z"/></svg></span>The kit</p>
+            <p class="mono" style="font-size:17px;color:var(--teal);margin:0 0 16px;">github.com/[TBC]/ll6-spec-kit</p>
+            <div class="tile mono" style="font-size:15px;">03-spec-agent-prompt.md</div>
+            <div class="tile mono" style="font-size:15px;">04-spec.md</div>
+            <div class="tile mono" style="font-size:15px;">checks/egress_check.py</div>
+            <div class="tile mono" style="font-size:15px;">sample-data/claims_notes.csv</div>
+          </div>
+          <div class="card hot" style="display:flex;flex-direction:column;">
+            <!-- TODO: swap in course image when GK sends it -->
+            <div style="flex:1;min-height:180px;border:1.5px dashed var(--border-strong);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><p class="small" style="font-size:15px;letter-spacing:0.1em;text-transform:uppercase;margin:0;">Course image coming</p></div>
+            <a href="https://maven.com/level-up-with-ai/product-builder-certification-spec-driven-ai-agents?promoCode=LAUNCH" style="text-decoration:none;display:block;padding:14px 18px;border-left:4px solid var(--teal);background:var(--teal-light);margin-top:auto;">
+              <p style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.14em;color:var(--teal);margin:0 0 6px;">New course · code LAUNCH</p>
+              <p style="font-size:19px;font-weight:700;color:var(--text);margin:0;line-height:1.3;">Product Builder Certification: Spec-Driven AI Agents &rarr;</p>
+            </a>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:22px;">
+          <p class="small" style="font-size:15px;margin:0;line-height:1.6;"><b style="color:var(--text);">Hamza Farooq</b> · FDE Builder Mode on Maven · LinkedIn<br><b style="color:var(--text);">GK</b> · LinkedIn · aibarraiser.substack.com · flywheelbygk.com</p>
+          <p class="keyline teal" style="font-size:22px;max-width:560px;text-align:right;">Which rule from your last kickoff would your build break today?</p>
+        </div>
+      </div>
+      <aside class="notes">[30s] The kit is in the repository: the spec agent prompt, the spec, the egress check and the sample notes. My new course, Product Builder Certification: Spec-Driven AI Agents, goes deeper on the spec kit, the checks and the handover, and the code LAUNCH is on screen.
+
+Read the question once, slowly, and open Q&amp;A.</aside>
+    </section>
+
+  </div>
+</div>
+
+<div id="deck-stripe-left"></div>
+<div id="deck-bar-bottom"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    width:1440, height:900, margin:0, minScale:0.2, maxScale:2,
+    hash:true, transition:'fade', slideNumber:true, controls:false, progress:true,
+    plugins:[ RevealNotes ]
+  });
+</script>
+</body>
+</html>
