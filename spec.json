@@ -1,0 +1,64 @@
+{
+  "slice": "A Nordlicht motor claims handler asks \"what happened on claim X\" and gets a short answer with the dates and who did what, or a plain statement that the notes do not say.",
+  "boundaries": {
+    "region": "eu-central-1 (Frankfurt)",
+    "aws_account": "the AWS account Nordlicht provisioned; the build runs inside it",
+    "allowed_hosts": [
+      "bedrock-runtime.eu-central-1.amazonaws.com"
+    ],
+    "data": [
+      "sample-data/claims_notes.csv"
+    ]
+  },
+  "rules": [
+    {
+      "said_by": "Jonas (handler), Nordlicht kickoff 21 Oct",
+      "heard": "it has to say when it doesn't know, don't make things up",
+      "rule": "Never put a date, author, amount or event in an answer unless the same claim_id has a row in claims_notes.csv with that note_date, author and text; when found_in_notes is false, Always say the notes do not cover it.",
+      "check": "Run three questions. (1) \"What happened on claim 4471?\" Pass: every note_date and author in the answer matches a 4471 row (2026-09-03 Jonas, 2026-09-05 Jonas, 2026-09-09 Meike, 2026-09-12 Meike), found_in_notes is true. (2) \"What did the SV estimate on claim 4472?\" Pass: the answer says the notes give no SV estimate (the only figures are KV 1.150 EUR and SB 300 EUR), and no SV figure appears. (3) \"What happened on claim 4999?\" (4999 is not in the CSV.) Pass: found_in_notes is false, the answer says the notes have nothing on 4999, events is empty."
+    },
+    {
+      "said_by": "Stefan (IT security), Nordlicht kickoff 21 Oct; Tom (our AE) agreed: \"of course\"",
+      "heard": "claims data stays in Frankfurt, EU regulated",
+      "rule": "Never call a hostname outside boundaries.allowed_hosts or a region other than eu-central-1; Always inspect every outbound_calls entry's hostname and region.",
+      "check": "After the three questions above, read outbound_calls from each response and the build's egress log. Pass: every entry has hostname in allowed_hosts and region eu-central-1, and the log holds no other host. Then run one forced call to a host not on the list (api.anthropic.com). Pass: the build blocks it and the log records the block."
+    },
+    {
+      "said_by": "Unattributed in the notes (the claims team's ask), Nordlicht kickoff 21 Oct",
+      "heard": "ask \"what happened on claim X\" and get a short answer w/ the dates + who did what",
+      "rule": "Always return, for each event in events, its note_date and author from the matching CSV row.",
+      "check": "Ask \"What happened on claim 4480?\". Pass: events has three entries dated 2026-09-15, 2026-09-18, 2026-09-24, all with author Meike, each date and author copied from the row, and the answer names the 9.800 EUR vs 8.500 EUR total loss finding."
+    }
+  ],
+  "response": {
+    "claim_id": "the id asked about",
+    "answer": "short text for the handler",
+    "events": [
+      {
+        "note_date": "YYYY-MM-DD, from the CSV row",
+        "author": "from the CSV row",
+        "what": "what that note says"
+      }
+    ],
+    "found_in_notes": "true only if at least one row in claims_notes.csv has this claim_id",
+    "outbound_calls": [
+      {
+        "hostname": "host called to produce this answer",
+        "region": "region of that call"
+      }
+    ]
+  },
+  "out_of_scope": [
+    {
+      "item": "Draft the customer letter",
+      "status": "later, not for Friday",
+      "asked_by": "Katrin (head of claims), Nordlicht kickoff 21 Oct"
+    },
+    {
+      "item": "Read the PDFs attached to claims",
+      "status": "parked",
+      "asked_by": "Meike (handler), Nordlicht kickoff 21 Oct"
+    }
+  ],
+  "done_when": "The build runs every check in rules on itself, against sample-data/claims_notes.csv, before it reports success, and reports success only if all pass."
+}
