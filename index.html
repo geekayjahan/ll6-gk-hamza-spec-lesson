@@ -430,6 +430,80 @@ table.score td.spec{color:var(--text);background:rgba(42,127,168,0.06);}
 <p><b>So what's inside the spec? Let's zoom in.</b></p></aside>
     </section>
 
+    <!-- S7b Generic spec blueprint (added 30 Oct) -->
+    <section>
+      <div class="slide">
+        <p class="kicker">The spec-based approach</p>
+        <h2>Every spec has the same six parts, whatever the client asks for</h2>
+        <div style="display:grid;grid-template-columns:1.12fr 1fr;gap:48px;align-items:center;flex:1;min-height:0;">
+          <div class="fragment fade-up">
+            <svg class="flow" viewBox="0 0 680 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="spec blueprint: six parts">
+              <defs><clipPath id="bpclip"><rect x="12" y="12" width="656" height="536"/></clipPath></defs>
+              <rect x="12" y="12" width="656" height="536" fill="#ffffff" stroke="rgba(74,104,130,0.50)" stroke-width="1.2"/>
+              <rect x="12" y="12" width="656" height="44" fill="#2b2f36" clip-path="url(#bpclip)"/>
+              <circle cx="36" cy="34" r="5.5" fill="#ff5f57"/><circle cx="53" cy="34" r="5.5" fill="#febc2e"/><circle cx="70" cy="34" r="5.5" fill="#28c840"/>
+              <text x="92" y="39" class="mo" style="fill:#cfd3d8;font-size:14px;">spec.md</text>
+              <g class="mo">
+                <text x="40" y="96" style="font-size:18px;font-weight:500;fill:#1a1a1a;">## 1 · Problem</text>
+                <text x="40" y="121" style="font-size:15px;fill:#6a6a6a;">→ who has it · what breaks today</text>
+                <line x1="40" y1="138" x2="640" y2="138" stroke="rgba(74,104,130,0.20)"/>
+                <text x="40" y="172" style="font-size:18px;font-weight:500;fill:#1a1a1a;">## 2 · What good looks like</text>
+                <text x="40" y="197" style="font-size:15px;fill:#6a6a6a;">→ the behaviour, in one pass</text>
+                <line x1="40" y1="214" x2="640" y2="214" stroke="rgba(74,104,130,0.20)"/>
+                <text x="40" y="248" style="font-size:18px;font-weight:500;fill:#1a1a1a;">## 3 · Inputs &amp; interfaces</text>
+                <text x="40" y="273" style="font-size:15px;fill:#6a6a6a;">→ the data, files and systems it may touch</text>
+                <line x1="40" y1="290" x2="640" y2="290" stroke="rgba(74,104,130,0.20)"/>
+                <text x="40" y="324" style="font-size:18px;font-weight:500;fill:#1a1a1a;">## 4 · Non-goals</text>
+                <text x="40" y="349" style="font-size:15px;fill:#6a6a6a;">→ what is out of scope</text>
+                <line x1="40" y1="366" x2="640" y2="366" stroke="rgba(74,104,130,0.20)"/>
+                <text x="40" y="400" style="font-size:18px;font-weight:500;fill:#1a1a1a;">## 5 · Task decomposition</text>
+                <text x="40" y="425" style="font-size:15px;fill:#6a6a6a;">→ ordered steps, each with a done-check</text>
+                <rect x="28" y="446" width="624" height="80" fill="rgba(42,127,168,0.12)"/>
+                <text x="40" y="478" style="font-size:18px;font-weight:500;fill:#2a7fa8;">## 6 · Verification</text>
+                <text x="40" y="503" style="font-size:15px;fill:#1a1a1a;">→ pass / fail tests, two graders agree</text>
+              </g>
+            </svg>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:18px;">
+            <div class="card fragment fade-up">
+              <p class="card-title">Written before the build</p>
+              <p class="card-grey" style="margin:0;">You fill in all six parts from the client's own words at kickoff, before the agent writes any code.</p>
+            </div>
+            <div class="card fragment fade-up">
+              <p class="card-title">Every part can be checked</p>
+              <p class="card-grey" style="margin:0;">Each fuzzy word ends up as a pass or fail test in part 6, so the client, the FDE and the agent grade the build the same way.</p>
+            </div>
+            <div class="card hot fragment fade-up">
+              <p class="card-title">Reused on every engagement</p>
+              <p class="card-grey" style="margin:0;">The next client gets the same skeleton. Only what goes inside each part changes.</p>
+            </div>
+          </div>
+        </div>
+        <p class="keyline teal fragment fade-up" style="margin-top:24px;">A prompt asks for an output. A spec also sets the limits and the test.</p>
+      </div>
+      <aside class="notes">[2 min]
+<p><b>Before we zoom into Stefan's rule, here's the shape every spec takes.</b></p>
+<ul>
+<li>6 parts, same order on every build:
+<ol><li>Problem → who has it, what breaks today. No solution yet</li>
+<li>What good looks like → the behaviour in one pass</li>
+<li>Inputs &amp; interfaces → the data, files and systems it may touch</li>
+<li>Non-goals → what it won't do. You'll need this when the client asks for more</li>
+<li>Task decomposition → ordered steps, each with a done-check</li>
+<li>Verification → pass/fail tests 2 graders would score the same</li>
+</ol></li>
+</ul>
+<p>(pause)</p>
+<p><b>So what does spec-based mean?</b></p>
+<ul>
+<li>You fill these in before the agent writes a line</li>
+<li>From the client's words, at kickoff</li>
+<li>Every fuzzy word becomes a test in part 6</li>
+<li>Next client → same skeleton, new contents</li>
+</ul>
+<p><b>Now let's follow one of Stefan's sentences into it.</b></p></aside>
+    </section>
+
     <!-- S8 Spec blueprint -->
     <section>
       <div class="slide">
