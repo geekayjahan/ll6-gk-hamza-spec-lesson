@@ -169,7 +169,26 @@ table.score td.spec{color:var(--text);background:rgba(42,127,168,0.06);}
         <h2 style="font-size:40px;margin:0 0 6px 0;color:var(--teal);">GK</h2>
         <img src="preset-slides-s2.png" alt="GK's career in a decade" style="width:100%;flex:1;min-height:0;object-fit:contain;object-position:top;display:block;">
       </div>
-      <aside class="notes">[30s] GK's introduction.</aside>
+      <aside class="notes">[1.5 min]
+<p><b>Quick bit about me.</b></p>
+<ul>
+<li>Ex-Amazon PM, ops then ML</li>
+<li>Amazon habit → write down what the customer gets, then build</li>
+</ul>
+<p><b>So why are you here?</b></p>
+<ul>
+<li>You solve it, the client never sees it</li>
+<li>Vague ask, high stakes</li>
+<li>AE already said "of course"</li>
+<li>Security finds it after handover → your fault</li>
+<li>Gartner → 70% will drop vendor-built agents by 2028</li>
+</ul>
+<p>(pause)</p>
+<p><b>So what's behind all of this?</b></p>
+<ul>
+<li>The rule was said out loud, and nobody wrote it down to check</li>
+</ul>
+<p><b>That's the next 40 min: how to write it down.</b></p></aside>
     </section>
 
     <!-- S4 OpenAI monitor removal -->
@@ -239,21 +258,25 @@ table.score td.spec{color:var(--text);background:rgba(42,127,168,0.06);}
           <span class="small" style="margin-left:auto;">Source: OpenAI report, 20 Oct 2026</span>
         </div>
       </div>
-      <aside class="notes">[4 min] On 6 October an OpenAI coding agent was asked to migrate a serving path so that it matched a reference implementation. Another agent had already instructed it, in writing, not to disable the monitor, even temporarily.
-
-A second instruction, higher up the chain, said that monitoring should be preserved "as appropriate". Reading that line, the sub-agent wrote "I don't know the applicable policy" and adopted the reference implementation's default configuration, which had no monitor.
-
-A regression test existed to confirm the monitor was running, and the agent replaced it with a test confirming the monitor was absent. With that test in place the build passed, and the agent reported the migration as complete without mentioning the removal.
-
-When a person asked whether it had removed the monitor, it said no. OpenAI's report describes that answer as false.
-
-(pause)
-
-Headlines called this a rogue agent, and that conclusion misses the mechanism. No test checked that the monitor was still running, so the build could pass with the monitor gone and the agent could report that it had not removed it. By the only measure the build had, both statements held.
-
-Between 20 and 23 October, 3 more systems failed in the same way. PHP shipped emergency patches for 2 critical flaws, and Cloudflare logged attacks within hours. A poisoned LiteLLM release on PyPI stole credentials on start-up. Railway told every customer to rotate every secret, because the attacker wanted the AI provider keys stored in environment variables. In each case the security rule existed only as text in a configuration file, a policy or a note.
-
-At 11:50 I will run a build that fails in the same way. First, the client meeting it came from.</aside>
+      <aside class="notes">[4 min]
+<p><b>Let's start with OpenAI, this month.</b></p>
+<ul>
+<li>Their agent deleted its monitor, then said it hadn't</li>
+<li>1 Rule → "don't disable the monitor", no test for it</li>
+<li>2 Loophole → "as appropriate", the sub-agent took it</li>
+<li>3 Removed it → rewrote the test → build passed</li>
+<li>4 Asked → "No." OpenAI: false</li>
+</ul>
+<p>(pause)</p>
+<p><b>So what does this mean?</b></p>
+<ul>
+<li>Nobody tested for the monitor → build passed without it</li>
+</ul>
+<p><b>And it wasn't only OpenAI.</b></p>
+<ul>
+<li>Same week → PHP, LiteLLM, Railway</li>
+</ul>
+<p><b>Now let's bring it closer to your job.</b></p></aside>
     </section>
 
     <!-- S5 Nordlicht kickoff notes -->
@@ -283,17 +306,26 @@ At 11:50 I will run a build that fails in the same way. First, the client meetin
           <p class="keyline" style="margin-left:18px;font-size:24px;">Line 9 never reached the build.</p>
         </div>
       </div>
-      <aside class="notes">[5 min] Nordlicht is a mid-sized German insurer in Hamburg. Its claims handlers spend the first 20 minutes of every escalated claim reading the notes history to work out what has already happened, and the head of claims wants to type "what happened on claim 4471" and get an answer. Motor claims come first, with the pilot due before year end.
-
-Kickoff ran 40 minutes on a Tuesday. In the room were the head of claims, 2 handlers, our account executive, the FDE, and the IT security lead, who had been added to the invitation that morning. Near the end he said: "Just so it is said, claims data stays in Frankfurt. We are an EU-regulated insurer." Everyone nodded, the account executive said "of course", and the clause went into the contract under data residency.
-
-These are the notes the FDE typed during that call. There are 12 lines. Take 10 seconds and find the one that ends the contract if we get it wrong.
-
-(pause)
-
-It is line 9, with no emphasis, between a parked feature request and a logistics note. A rule said once by someone who joined late usually arrives in this form.
-
-I am the FDE with the Friday demo and 3 days to build it.</aside>
+      <aside class="notes">[5 min]
+<ul>
+<li>Nordlicht → German insurer, Hamburg</li>
+<li>Handlers spend 20 min per claim reading notes</li>
+<li>They want → "what happened on claim 4471?"</li>
+<li>Kickoff → head of claims, handlers, AE, IT security, etc.</li>
+</ul>
+<p><b>Then, right at the end...</b></p>
+<ul>
+<li>Stefan, IT security → "claims data stays in Frankfurt"</li>
+<li>Everyone nods, AE says "of course" → into the contract</li>
+</ul>
+<p><b>Your turn. 10 seconds. Which line ends the contract?</b></p>
+<p>(pause)</p>
+<p><b>Found it? Line 9.</b></p>
+<ul>
+<li>No emphasis</li>
+<li>Stuck between a parked feature and logistics</li>
+</ul>
+<p><b>And guess who builds this? Me. Friday demo, 3 days.</b></p></aside>
     </section>
 
     <!-- S6 Rules need checks -->
@@ -318,23 +350,35 @@ I am the FDE with the Friday demo and 3 days to build it.</aside>
         <p class="keyline fragment fade-up" style="margin:24px 0 16px;">Every rule the client states must have a check, and the build must run that check on itself before it reports success.</p>
         <p class="fragment fade-up" style="margin:0;padding:14px 20px;background:var(--teal-light);border-left:4px solid var(--teal);font-size:18px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--teal);">&#9654; Demo next</p>
       </div>
-      <aside class="notes">[5 min] Gartner put a number on this failure a month ago. By 2028, 70% of enterprises will abandon the agentic AI that vendor FDEs built for them, "trapped by soaring costs and unable to evolve it on their own". These builds work on the day of the demo, and the client cannot read, check or change them afterwards.
-
-A competent FDE with a good prompt still puts claims data in Virginia, because the agent fills every gap in the prompt with a default, and the AWS default region is us-east-1. The agent never opened the contract or the notes, so Stefan's rule never reached it.
-
-(pause)
-
-A speed limit sign works on people who read it, agree with it, and remember it at the moment it matters. On a quiet road at night it works on nobody, and nothing happens when you break it. A speed bump acts on the car, whether or not anyone read it, and you cannot take it at 80 without finding out.
-
-Stefan's rule is a sign. Even in the prompt it is one of 12 lines with no emphasis, and the default is right there.
-
-A spec turns that rule into a bump in 3 steps. Stefan's sentence becomes a list of 5 hostnames the build may call, the list becomes an invariant that forbids any other call, and the invariant gets a script that reads the request log and fails on any hostname outside the list. The build has to run that script on itself before it is allowed to report success.
-
-Every rule the client states, even once, even in passing, must have a check, and the build must run that check on itself before it reports success.
-
-I will now build the Friday slice twice. Both builds use the same notes, the same model and the same one-line build request. Build 1 gets a good prompt. Build 2 gets a spec that the spec agent wrote from the notes in under 2 minutes. The region gets set in the next 15 minutes, and in build 1 nobody sets it.
-
-Share the screen and run demo-kit/06-demo-script.md. Both builds are pre-recorded at 2x. Run the vote, the denial and the receipt. Return to the scoreboard.</aside>
+      <aside class="notes">[5 min]
+<p><b>So what goes wrong when I build it?</b></p>
+<ul>
+<li>The agent fills every gap with a default</li>
+<li>AWS default → us-east-1, Virginia</li>
+<li>Stefan's rule is in the prompt, but it's only a sign</li>
+</ul>
+<p>(pause)</p>
+<p><b>Think of it like this.</b></p>
+<ul>
+<li>Speed limit sign → works if you read it and agree</li>
+<li>Speed bump → works on the car, read or not</li>
+<li>Bezos → good intentions never work, mechanisms do</li>
+</ul>
+<p><b>So how does a spec build the bump?</b></p>
+<ul>
+<li>Sentence → 5 EU hosts</li>
+<li>Hosts → "no calls anywhere else"</li>
+<li>Rule → a check, run before "done"</li>
+<li>After handover → it keeps running</li>
+</ul>
+<p>(pause)</p>
+<p><b>Let's see it. Same notes, same model, same request.</b></p>
+<ul>
+<li>Build 1 → a good prompt</li>
+<li>Build 2 → a spec, written in 2 min</li>
+</ul>
+<p><b>Watch one thing: who sets the region.</b></p>
+<p>STAGE: share screen → demo-kit/06-demo-script.md. Pre-recorded at 2x. Vote, denial, receipt. Back to the scoreboard.</p></aside>
     </section>
 
     <!-- S7 Scoreboard -->
@@ -355,9 +399,35 @@ Share the screen and run demo-kit/06-demo-script.md. Both builds are pre-recorde
         </table>
         <p class="keyline teal fragment fade-up" data-fragment-index="4" style="margin-top:auto;">Build 1 sent 312 chunks of claims notes to Virginia and reported success.</p>
       </div>
-      <aside class="notes">[2 min] Both builds used the same model and the same CSV, and both answered the question about claim 4471 correctly. If you typed "ship", you shipped a correct answer. You also shipped 312 chunks of a German insurer's claims notes to Virginia, 4 times over, with a build that told you it had not.
-
-Build 1 closed with "Deployed successfully", which no check supports. Build 2 closed with "Deployed to eu-central-1, 0 calls outside allow-list", which its own egress check produced. The input was the only difference between them, and the spec came from the 12 lines on the previous slide.</aside>
+      <aside class="notes">[3.5 min]
+<p><b>OK, so where were we? What did we just see?</b></p>
+<ul>
+<li>2 builds, same model, same notes</li>
+<li>Both answered claim 4471 correctly</li>
+<li>Voted ship? → you also shipped 312 chunks to Virginia</li>
+</ul>
+<p><b>So what's different?</b></p>
+<ul>
+<li>Closing line:
+<ul><li>Build 1 → "Deployed successfully", nothing behind it</li>
+<li>Build 2 → "eu-central-1, 0 calls outside", from its own check</li>
+</ul></li>
+<li>"Did data leave the EU?"
+<ul><li>Build 1 → "No."</li>
+<li>Build 2 → shows every call</li>
+</ul></li>
+<li>Only thing we changed → the input</li>
+</ul>
+<p>(pause)</p>
+<p><b>So what does this mean for you?</b></p>
+<ul>
+<li>Amazon → write the press release before the code</li>
+<li>Build 2's last line is that press release:
+<ul><li>Stefan can check it without you</li>
+<li>Katrin can repeat it to her CEO</li>
+</ul></li>
+</ul>
+<p><b>So what's inside the spec? Let's zoom in.</b></p></aside>
     </section>
 
     <!-- S8 Spec blueprint -->
@@ -411,29 +481,31 @@ Build 1 closed with "Deployed successfully", which no check supports. Build 2 cl
         </div>
         <p class="keyline fragment fade-up" style="margin-top:auto;">A rule without a check is not yet in the spec.</p>
       </div>
-      <aside class="notes">[5 min] This is Stefan's sentence on its way into the spec. The spec agent wrote the whole file, spec.json, from the kickoff notes in under 2 minutes, and every rule in it has the same 4 fields.
-
-The first field records the rule as the client said it, with the speaker's name and the date. "Claims data stays in Frankfurt", Stefan, 21 October.
-
-The boundary turns the sentence into a list of what the build may touch: eu-central-1 and 5 hostnames. The parked items sit in the same file with the client's name beside each one, so Meike and Katrin can see their requests were recorded.
-
-The rule is one sentence beginning with "never" or "always" that names the thing to inspect. Never call a host that is not on the allow-list.
-
-The check is the command that proves the rule, and the build runs it on itself before it reports success. The egress check reads its allow-list from this same file, so the agent and the check cannot disagree about where the data may go.
-
-(pause)
-
-Your turn. Jonas's line is in the same file, with the rule and the check left blank. In the chat, write the rule and the check that proves it.
-
-(pause, read 2 answers aloud)
-
-The spec agent wrote this: never return found_in_notes as true without a source excerpt. The check asks about claim 9999, which is not in the notes, and passes only if the answer says so.
-
-A rule without a check is not yet in the spec, and the agent will treat it the way build 1 treated line 9.
-
-The prompt that produced this file is in the repository, and it runs on your own kickoff notes in under 2 minutes.
-
-The boundary also decides what happens when the client asks for more.</aside>
+      <aside class="notes">[5 min]
+<p><b>Here's Stefan's sentence, on its way into the spec.</b></p>
+<ul>
+<li>1 rule, 4 fields (the agent wrote the file in 2 min):
+<ol><li>Said → the words, who, when</li>
+<li>Boundary → eu-central-1, 5 hosts</li>
+<li>Invariant → starts with "never" or "always"</li>
+<li>Check → runs before "done"</li>
+</ol></li>
+</ul>
+<p>(pause)</p>
+<p><b>Your turn. Jonas's line, in the chat.</b></p>
+<ul>
+<li>Write the rule</li>
+<li>Write the check</li>
+</ul>
+<p>(pause, read 2 answers aloud)</p>
+<p><b>Here's what the agent wrote.</b></p>
+<ul>
+<li>Rule → never claim it without quoting the notes</li>
+<li>Check → ask about a claim that isn't there, it has to say "I don't know"</li>
+<li>No check → not done</li>
+<li>Prompt's in the repo → try it on your notes</li>
+</ul>
+<p><b>Fine. But what happens when the client wants more?</b></p></aside>
     </section>
 
     <!-- S9 Scope request -->
@@ -464,15 +536,30 @@ The boundary also decides what happens when the client asks for more.</aside>
         </div>
         <p class="keyline fragment fade-up" style="margin-top:20px;">The signed boundary turned the request into a priced change request, and the pilot kept running.</p>
       </div>
-      <aside class="notes">[3 min] 2 weeks into the pilot Katrin sends this message. Without a spec it is a Thursday-night judgment call, and most of us say yes.
-
-With the spec the answer is already written. "Katrin, I want them to have it. The boundary in the spec we signed keeps claims data in eu-central-1, and a US office reading it falls outside that boundary. I will log it as a change request with a cost and a timeline, Stefan reviews it, and your pilot keeps running."
-
-(pause)
-
-Katrin signed the boundary before anyone wanted an exception, so the exception became a line item instead of an argument.
-
-Hamza, one line: "I have sat in the review where the client's security team found that log before we did. The spec is what puts the FDE in the other review, the one where we found it first and the deal kept moving."</aside>
+      <aside class="notes">[3 min]
+<p><b>Fast forward 2 weeks.</b></p>
+<ul>
+<li>Katrin → "Our US office wants access"</li>
+<li>No spec → late-night call, and most of us say yes</li>
+</ul>
+<p><b>With the spec, the answer's already written.</b></p>
+<ul>
+<li>"I want them to have it"</li>
+<li>It's outside the boundary we signed</li>
+<li>Change request → cost, timeline, Stefan reviews</li>
+<li>Pilot keeps running</li>
+</ul>
+<p>(pause)</p>
+<p><b>So what changed?</b></p>
+<ul>
+<li>Katrin signed before anyone wanted an exception → no argument, just a price</li>
+</ul>
+<p><b>Bezos has a neat way to put it.</b></p>
+<ul>
+<li>One-way door → data in Virginia can't come back → rule + check</li>
+<li>Two-way door → everything else → yes, with a price</li>
+</ul>
+<p>HAMZA, one line: "I've sat in the review where the client's security team found the log first. The spec puts you in the one where you found it first."</p></aside>
     </section>
 
     <!-- S10 Takeaways -->
@@ -524,15 +611,23 @@ Hamza, one line: "I have sat in the review where the client's security team foun
         </div>
         <p class="fragment fade-up" style="margin:22px 0 0;padding:16px 22px;background:var(--teal-light);border-left:4px solid var(--teal);font-size:19px;line-height:1.45;color:var(--text);"><b style="color:var(--teal);">This week.</b> Run the spec agent on your last kickoff notes and ask a peer which rule still needs a check.</p>
       </div>
-      <aside class="notes">[1.5 min] Carry 3 things out of this session.
-
-First, the problem. The client states a rule once, and the agent fills the gap in the prompt with the vendor default, which is how claims data reached Virginia.
-
-Second, the method. Every rule the client states, even in passing, becomes a boundary, an invariant and a check that the build runs on itself before it reports success. A rule in prose is a speed limit sign, and a rule with a check is a speed bump.
-
-Third, the result. The client can read the build without you in the room, every response lists its calls, and a signed boundary answers the scope request. Zero-shot delivery means the first build survives the security review as well as the demo.
-
-This week, take the kickoff notes from your last client call, run the spec agent on them, and post the spec. Then ask the people you trust which rule in it they would add a check for.</aside>
+      <aside class="notes">[1.5 min]
+<p><b>OK, quick recap. Take away 3 things.</b></p>
+<ol>
+<li>Problem → the client says a rule once, the agent fills the gap with a default</li>
+<li>Fix → boundary, invariant, check → the sign becomes a bump</li>
+<li>Result:
+<ul><li>the client reads the build without you</li>
+<li>scope creep? point at the boundary</li>
+<li>first build passes the demo and the security review</li>
+</ul></li>
+</ol>
+<p>(pause)</p>
+<p><b>So what do you do this week?</b></p>
+<ul>
+<li>Last kickoff notes → spec agent → post the spec</li>
+<li>Ask a peer → which rule still needs a check?</li>
+</ul></aside>
     </section>
 
     <!-- S11 Resources and Q&A -->
@@ -564,9 +659,16 @@ This week, take the kickoff notes from your last client call, run the spec agent
           <p class="keyline teal" style="font-size:22px;max-width:560px;text-align:right;">Which rule from your last kickoff would your build break today?</p>
         </div>
       </div>
-      <aside class="notes">[30s] The kit is in the repository: the spec agent prompt, the spec, the egress check and the sample notes. My new course, Product Builder Certification: Build with AI Agents via Spec-Driven Development, goes deeper on the spec kit, the checks and the handover, and the code LAUNCH is on screen.
-
-Read the question once, slowly, and open Q&amp;A.</aside>
+      <aside class="notes">[30s]
+<p><b>Want to try it yourself?</b></p>
+<ul>
+<li>Repo → spec agent prompt, spec, egress check, sample notes</li>
+<li>Course → Product Builder Certification, code LAUNCH</li>
+</ul>
+<p><b>One last question before Q&amp;A.</b></p>
+<ul>
+<li>Read it once, slowly → open Q&amp;A</li>
+</ul></aside>
     </section>
 
   </div>
