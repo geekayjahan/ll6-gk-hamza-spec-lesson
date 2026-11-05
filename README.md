@@ -48,6 +48,6 @@ The second spec argument is optional. Without it, the check reads [spec.json](sp
 
 ## Go deeper
 
-The [Product Builder Certification](https://maven.com/level-up-with-ai/product-builder-certification-spec-driven-ai-agents?promoCode=LAUNCH) covers the spec kit, the checks and the handover. Code LAUNCH.
+The [Product Builder Certification by GK](https://maven.com/level-up-with-ai/product-builder-certification-spec-driven-ai-agents?utm_source=github&utm_medium=repo&utm_campaign=pbc-dec26&utm_content=gh-ll6-spec-lesson) covers the spec kit, the checks and the handover over two weeks of live sessions.
 
 Hamza Farooq runs FDE Builder Mode on Maven. GK writes at [aibarraiser.substack.com](https://aibarraiser.substack.com) and runs [flywheelbygk.com](https://flywheelbygk.com).
